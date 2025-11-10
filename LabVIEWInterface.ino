@@ -16,52 +16,52 @@
 #include <LiquidCrystal.h>
 
 //Includes for IR Remote
-#ifndef IRremoteInt_h
-#include "IRremoteInt.h"
-#endif
-#ifndef IRremote_h
-#include "IRremote.h"
-#endif
+// #ifndef IRremoteInt_h
+// #include "IRremoteInt.h"
+// #endif
+// #ifndef IRremote_h
+// #include "IRremote.h"
+// #endif
 
 
 
 /*********************************************************************************
  ** Optionally Include And Configure Stepper Support
  *********************************************************************************/
-#ifdef STEPPER_SUPPORT
+// #ifdef STEPPER_SUPPORT
 
-  // Stepper Modifications
-  #include "AFMotor.h"
-  #include "AccelStepper.h"
+//   // Stepper Modifications
+//   #include "AFMotor.h"
+//   #include "AccelStepper.h"
 
-  // Adafruit shield
-  AF_Stepper motor1(200, 1);
-  AF_Stepper motor2(200, 2);
+//   // Adafruit shield
+//   AF_Stepper motor1(200, 1);
+//   AF_Stepper motor2(200, 2);
   
-  // you can change these to DOUBLE or INTERLEAVE or MICROSTEP
-  // wrappers for the first motor
-  void forwardstep1() {  
-    motor1.onestep(FORWARD, SINGLE);
-  }
-  void backwardstep1() {  
-    motor1.onestep(BACKWARD, SINGLE);
-  }
-  // wrappers for the second motor
-  void forwardstep2() {  
-    motor2.onestep(FORWARD, SINGLE);
-  }
-  void backwardstep2() {  
-    motor2.onestep(BACKWARD, SINGLE);
-  }
+//   // you can change these to DOUBLE or INTERLEAVE or MICROSTEP
+//   // wrappers for the first motor
+//   void forwardstep1() {  
+//     motor1.onestep(FORWARD, SINGLE);
+//   }
+//   void backwardstep1() {  
+//     motor1.onestep(BACKWARD, SINGLE);
+//   }
+//   // wrappers for the second motor
+//   void forwardstep2() {  
+//     motor2.onestep(FORWARD, SINGLE);
+//   }
+//   void backwardstep2() {  
+//     motor2.onestep(BACKWARD, SINGLE);
+//   }
   
-  AccelStepper steppers[8];  //Create array of 8 stepper objects
+//   AccelStepper steppers[8];  //Create array of 8 stepper objects
 
-#endif
+// #endif
 
 // Variables
 
 unsigned int retVal;
-int sevenSegmentPins[8];
+// int sevenSegmentPins[8];
 int currentMode;
 unsigned int freq;
 unsigned long duration;
@@ -74,7 +74,7 @@ Servo *servos;
 byte customChar[8];
 LiquidCrystal lcd(0,0,0,0,0,0,0);
 unsigned long IRdata;
-IRsend irsend;
+// IRsend irsend;
 
 // Sets the mode of the Arduino (Reserved For Future Use)
 void setMode(int mode)
@@ -85,12 +85,12 @@ void setMode(int mode)
 // Checks for new commands from LabVIEW and processes them if any exists.
 int checkForCommand(void)
 {  
-#ifdef STEPPER_SUPPORT
-  // Call run function as fast as possible to keep motors turning
-  for (int i=0; i<8; i++){
-    steppers[i].run();
-  }
-#endif
+// #ifdef STEPPER_SUPPORT
+//   // Call run function as fast as possible to keep motors turning
+//   for (int i=0; i<8; i++){
+//     steppers[i].run();
+//   }
+// #endif
 
   int bufferBytes = Serial.available();
 
@@ -188,371 +188,371 @@ void processCommand(unsigned char command[])
       analogReadPort();
       break; 
       
-    /*********************************************************************************
-    ** Low Level - PWM Commands
-    *********************************************************************************/      
-    case 0x0A:    // PWM Write Pin
-      analogWrite(command[2], command[3]);
-       Serial.write('0');
-      break;
-    case 0x0B:    // PWM Write 3 Pins
-      analogWrite(command[2], command[5]);
-      analogWrite(command[3], command[6]);
-      analogWrite(command[4], command[7]);
-       Serial.write('0');
-      break;
+    // /*********************************************************************************
+    // ** Low Level - PWM Commands
+    // *********************************************************************************/      
+    // case 0x0A:    // PWM Write Pin
+    //   analogWrite(command[2], command[3]);
+    //    Serial.write('0');
+    //   break;
+    // case 0x0B:    // PWM Write 3 Pins
+    //   analogWrite(command[2], command[5]);
+    //   analogWrite(command[3], command[6]);
+    //   analogWrite(command[4], command[7]);
+    //    Serial.write('0');
+    //   break;
       
-    /*********************************************************************************
-    ** Sensor Specific Commands
-    *********************************************************************************/      
-    case 0x0C:    // Configure Seven Segment Display
-      sevenSegment_Config(command);
-       Serial.write('0');
-      break;
-    case 0x0D:    // Write To Seven Segment Display
-      sevenSegment_Write(command);
-       Serial.write('0');
-      break;
+    // /*********************************************************************************
+    // ** Sensor Specific Commands
+    // *********************************************************************************/      
+    // case 0x0C:    // Configure Seven Segment Display
+    //   sevenSegment_Config(command);
+    //    Serial.write('0');
+    //   break;
+    // case 0x0D:    // Write To Seven Segment Display
+    //   sevenSegment_Write(command);
+    //    Serial.write('0');
+    //   break;
       
-    /*********************************************************************************
-    **  I2C
-    *********************************************************************************/
-    case 0x0E:    // Initialize I2C
-      Wire.begin();
-       Serial.write('0');
-      break;
-    case 0x0F:    // Send I2C Data
-      Wire.beginTransmission(command[3]);
-      for(int i=0; i<command[2]; i++)
-      {
-        #if defined(ARDUINO) && ARDUINO >= 100
-          Wire.write(command[i+4]);
-        #else
-          Wire.send(command[i+4]);
-        #endif
+    // /*********************************************************************************
+    // **  I2C
+    // *********************************************************************************/
+    // case 0x0E:    // Initialize I2C
+    //   Wire.begin();
+    //    Serial.write('0');
+    //   break;
+    // case 0x0F:    // Send I2C Data
+    //   Wire.beginTransmission(command[3]);
+    //   for(int i=0; i<command[2]; i++)
+    //   {
+    //     #if defined(ARDUINO) && ARDUINO >= 100
+    //       Wire.write(command[i+4]);
+    //     #else
+    //       Wire.send(command[i+4]);
+    //     #endif
         
-      }
-      Wire.endTransmission(); 
-       Serial.write('0');   
-      break;
-    case 0x10:    // I2C Read  
-      i2cReadTimeouts = 0;
-      Wire.requestFrom(command[3], command[2]);
-      while(Wire.available() < command[2])
-      {
-        i2cReadTimeouts++;
-        if(i2cReadTimeouts > 100)
-        {
-          return;
-        }
-        else
-        {
-          delay(1); 
-        }
-      }
+    //   }
+    //   Wire.endTransmission(); 
+    //    Serial.write('0');   
+    //   break;
+    // case 0x10:    // I2C Read  
+    //   i2cReadTimeouts = 0;
+    //   Wire.requestFrom(command[3], command[2]);
+    //   while(Wire.available() < command[2])
+    //   {
+    //     i2cReadTimeouts++;
+    //     if(i2cReadTimeouts > 100)
+    //     {
+    //       return;
+    //     }
+    //     else
+    //     {
+    //       delay(1); 
+    //     }
+    //   }
 
-      for(int i=0; i<command[2]; i++)
-      {
-        #if defined(ARDUINO) && ARDUINO >= 100
-          Serial.write(Wire.read());
-        #else
-          Serial.write(Wire.receive());
-        #endif
+    //   for(int i=0; i<command[2]; i++)
+    //   {
+    //     #if defined(ARDUINO) && ARDUINO >= 100
+    //       Serial.write(Wire.read());
+    //     #else
+    //       Serial.write(Wire.receive());
+    //     #endif
         
-      }
-      break;
+    //   }
+    //   break;
       
-    /*********************************************************************************
-    ** SPI
-    *********************************************************************************/      
-    case 0x11:    // SPI Init
-      SPI.begin();
-       Serial.write('0');
-      break;
-    case 0x12:    // SPI Set Bit Order (MSB LSB)
-      if(command[2] == 0)
-      {
-        SPI.setBitOrder(LSBFIRST);
-      }
-      else
-      {
-        SPI.setBitOrder(MSBFIRST); 
-      }  
-       Serial.write('0');  
-      break;
-    case 0x13:    // SPI Set Clock Divider
-      spi_setClockDivider(command[2]);
-       Serial.write('0');
-      break;
-    case 0x14:    // SPI Set Data Mode
-      switch(command[2])
-      {
-      case 0:
-        SPI.setDataMode(SPI_MODE0);
-        break;  
-      case 1:
-        SPI.setDataMode(SPI_MODE1);
-        break; 
-      case 2:
-        SPI.setDataMode(SPI_MODE2);
-        break; 
-      case 3:
-        SPI.setDataMode(SPI_MODE3);
-        break; 
-      default:        
-        break;
-      }    
-       Serial.write('0');
-      break;
-    case 0x15:  // SPI Send / Receive 
-      spi_sendReceive(command);
-      break;
-    case 0x16:  // SPI Close
-      SPI.end();
-       Serial.write('0');  
-      break; 
+    // /*********************************************************************************
+    // ** SPI
+    // *********************************************************************************/      
+    // case 0x11:    // SPI Init
+    //   SPI.begin();
+    //    Serial.write('0');
+    //   break;
+    // case 0x12:    // SPI Set Bit Order (MSB LSB)
+    //   if(command[2] == 0)
+    //   {
+    //     SPI.setBitOrder(LSBFIRST);
+    //   }
+    //   else
+    //   {
+    //     SPI.setBitOrder(MSBFIRST); 
+    //   }  
+    //    Serial.write('0');  
+    //   break;
+    // case 0x13:    // SPI Set Clock Divider
+    //   spi_setClockDivider(command[2]);
+    //    Serial.write('0');
+    //   break;
+    // case 0x14:    // SPI Set Data Mode
+    //   switch(command[2])
+    //   {
+    //   case 0:
+    //     SPI.setDataMode(SPI_MODE0);
+    //     break;  
+    //   case 1:
+    //     SPI.setDataMode(SPI_MODE1);
+    //     break; 
+    //   case 2:
+    //     SPI.setDataMode(SPI_MODE2);
+    //     break; 
+    //   case 3:
+    //     SPI.setDataMode(SPI_MODE3);
+    //     break; 
+    //   default:        
+    //     break;
+    //   }    
+    //    Serial.write('0');
+    //   break;
+    // case 0x15:  // SPI Send / Receive 
+    //   spi_sendReceive(command);
+    //   break;
+    // case 0x16:  // SPI Close
+    //   SPI.end();
+    //    Serial.write('0');  
+    //   break; 
       
-    /*********************************************************************************
-    ** Servos
-    *********************************************************************************/      
-    case 0x17:  // Set Num Servos
-      free(servos);
-      servos = (Servo*) malloc(command[2]*sizeof(Servo));
-      for(int i=0; i<command[2]; i++)
-      {
-        servos[i] = Servo(); 
-      }
-      if(servos == 0)
-      {
-        Serial.write('1');
-      }
-      else
-      {
-         Serial.write('0'); 
-      }
-      break;
-    case 0x18:  // Configure Servo
-      servos[command[2]].attach(command[3]);
-       Serial.write('0');
-      break; 
-    case 0x19:  // Servo Write
-      servos[command[2]].write(command[3]);
-       Serial.write('0');
-      break;
-    case 0x1A:  // Servo Read Angle
-      Serial.write(servos[command[2]].read());
-      break;
-    case 0x1B:  // Servo Write uS Pulse
-      servos[command[2]].writeMicroseconds( (command[3] + (command[4]<<8)) );
-       Serial.write('0');
-      break;
-    case 0x1C:  // Servo Read uS Pulse
-      retVal = servos[command[2]].readMicroseconds();
-      Serial.write ((retVal & 0xFF));
-      Serial.write( (retVal >> 8));
-      break;
-    case 0x1D:  // Servo Detach
-      servos[command[2]].detach();
-       Serial.write('0');
-      break; 
-     /*********************************************************************************
-         **                                      LCD
-         *********************************************************************************/  
-    case 0x1E:  // LCD Init
-        lcd.init(command[2], command[3], command[4], command[5], command[6], command[7], command[8], command[9], command[10], command[11], command[12], command[13]);
+    // /*********************************************************************************
+    // ** Servos
+    // *********************************************************************************/      
+    // case 0x17:  // Set Num Servos
+    //   free(servos);
+    //   servos = (Servo*) malloc(command[2]*sizeof(Servo));
+    //   for(int i=0; i<command[2]; i++)
+    //   {
+    //     servos[i] = Servo(); 
+    //   }
+    //   if(servos == 0)
+    //   {
+    //     Serial.write('1');
+    //   }
+    //   else
+    //   {
+    //      Serial.write('0'); 
+    //   }
+    //   break;
+    // case 0x18:  // Configure Servo
+    //   servos[command[2]].attach(command[3]);
+    //    Serial.write('0');
+    //   break; 
+    // case 0x19:  // Servo Write
+    //   servos[command[2]].write(command[3]);
+    //    Serial.write('0');
+    //   break;
+    // case 0x1A:  // Servo Read Angle
+    //   Serial.write(servos[command[2]].read());
+    //   break;
+    // case 0x1B:  // Servo Write uS Pulse
+    //   servos[command[2]].writeMicroseconds( (command[3] + (command[4]<<8)) );
+    //    Serial.write('0');
+    //   break;
+    // case 0x1C:  // Servo Read uS Pulse
+    //   retVal = servos[command[2]].readMicroseconds();
+    //   Serial.write ((retVal & 0xFF));
+    //   Serial.write( (retVal >> 8));
+    //   break;
+    // case 0x1D:  // Servo Detach
+    //   servos[command[2]].detach();
+    //    Serial.write('0');
+    //   break; 
+    //  /*********************************************************************************
+    //      **                                      LCD
+    //      *********************************************************************************/  
+    // case 0x1E:  // LCD Init
+    //     lcd.init(command[2], command[3], command[4], command[5], command[6], command[7], command[8], command[9], command[10], command[11], command[12], command[13]);
        
-        Serial.write('0');
-        break;
-      case 0x1F:  // LCD Set Size
-        lcd.begin(command[2], command[3]);
-        Serial.write('0');
-        break;
-      case 0x20:  // LCD Set Cursor Mode
-        if(command[2] == 0)
-        {
-          lcd.noCursor(); 
-        }
-        else
-        {
-          lcd.cursor(); 
-        }
-        if(command[3] == 0)
-        {
-          lcd.noBlink(); 
-        }
-        else
-        {
-          lcd.blink(); 
-        }
-        Serial.write('0');
-        break; 
-      case 0x21:  // LCD Clear
-        lcd.clear();
-        Serial.write('0');
-        break;
-      case 0x22:  // LCD Set Cursor Position
-        lcd.setCursor(command[2], command[3]);
-        Serial.write('0');
-        break;
-      case 0x23:  // LCD Print
-        lcd_print(command);        
-        break;
-      case 0x24:  // LCD Display Power
-        if(command[2] == 0)
-        {
-          lcd.noDisplay(); 
-        }
-        else
-        {
-          lcd.display();
-        }
-        Serial.write('0');
-        break;
-      case 0x25:  // LCD Scroll
-        if(command[2] == 0)
-        {
-          lcd.scrollDisplayLeft(); 
-        }
-        else
-        {
-          lcd.scrollDisplayRight();
-        }
-        Serial.write('0');
-        break;
-      case 0x26: //  LCD Autoscroll
-        if(command[2] == 0)
-        {
-          lcd.noAutoscroll(); 
-        }
-        else
-        {
-          lcd.autoscroll(); 
-        }
-        Serial.write('0');
-        break;
-      case 0x27: // LCD Print Direction
-        if(command[2] == 0)
-        {
-          lcd.rightToLeft(); 
-        }
-        else
-        {
-          lcd.leftToRight(); 
-        }
-        Serial.write('0');
-        break;
-      case 0x28: // LCD Create Custom Char
-        for(int i=0; i<8; i++)
-        {
-          customChar[i] = command[i+3];
-        }      
-        lcd.createChar(command[2], customChar);
+    //     Serial.write('0');
+    //     break;
+    //   case 0x1F:  // LCD Set Size
+    //     lcd.begin(command[2], command[3]);
+    //     Serial.write('0');
+    //     break;
+    //   case 0x20:  // LCD Set Cursor Mode
+    //     if(command[2] == 0)
+    //     {
+    //       lcd.noCursor(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.cursor(); 
+    //     }
+    //     if(command[3] == 0)
+    //     {
+    //       lcd.noBlink(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.blink(); 
+    //     }
+    //     Serial.write('0');
+    //     break; 
+    //   case 0x21:  // LCD Clear
+    //     lcd.clear();
+    //     Serial.write('0');
+    //     break;
+    //   case 0x22:  // LCD Set Cursor Position
+    //     lcd.setCursor(command[2], command[3]);
+    //     Serial.write('0');
+    //     break;
+    //   case 0x23:  // LCD Print
+    //     lcd_print(command);        
+    //     break;
+    //   case 0x24:  // LCD Display Power
+    //     if(command[2] == 0)
+    //     {
+    //       lcd.noDisplay(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.display();
+    //     }
+    //     Serial.write('0');
+    //     break;
+    //   case 0x25:  // LCD Scroll
+    //     if(command[2] == 0)
+    //     {
+    //       lcd.scrollDisplayLeft(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.scrollDisplayRight();
+    //     }
+    //     Serial.write('0');
+    //     break;
+    //   case 0x26: //  LCD Autoscroll
+    //     if(command[2] == 0)
+    //     {
+    //       lcd.noAutoscroll(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.autoscroll(); 
+    //     }
+    //     Serial.write('0');
+    //     break;
+    //   case 0x27: // LCD Print Direction
+    //     if(command[2] == 0)
+    //     {
+    //       lcd.rightToLeft(); 
+    //     }
+    //     else
+    //     {
+    //       lcd.leftToRight(); 
+    //     }
+    //     Serial.write('0');
+    //     break;
+    //   case 0x28: // LCD Create Custom Char
+    //     for(int i=0; i<8; i++)
+    //     {
+    //       customChar[i] = command[i+3];
+    //     }      
+    //     lcd.createChar(command[2], customChar);
         
-        Serial.write('0');
-        break;
-      case 0x29:  // LCD Print Custom Char
-        lcd.write(command[2]);
-        Serial.write('0');
-        break;
+    //     Serial.write('0');
+    //     break;
+    //   case 0x29:  // LCD Print Custom Char
+    //     lcd.write(command[2]);
+    //     Serial.write('0');
+    //     break;
             
         
-    /*********************************************************************************
-    ** Continuous Aquisition
-    *********************************************************************************/        
-      case 0x2A:  // Continuous Aquisition Mode On
-        acqMode=1;
-        contAcqPin=command[2];
-        contAcqSpeed=(command[3])+(command[4]<<8);  
-        acquisitionPeriod=1/contAcqSpeed;
-        iterationsFlt =.08/acquisitionPeriod;
-        iterations=(int)iterationsFlt;
-        if(iterations<1)
-        {
-          iterations=1;
-        }
-        delayTime= acquisitionPeriod; 
-       if(delayTime<0)
-       {
-         delayTime=0;
-       }   
-        break;   
-      case 0x2B:  // Continuous Aquisition Mode Off
-        acqMode=0;      
-        break;  
-     case 0x2C:  // Return Firmware Revision
-         Serial.write(byte(FIRMWARE_MAJOR));  
-         Serial.write(byte(FIRMWARE_MINOR));   
-        break;  
-     case 0x2D:  // Perform Finite Aquisition
-         Serial.write('0');
-         finiteAcquisition(command[2],(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
-        break;   
-    /*********************************************************************************
-    ** Stepper
-    *********************************************************************************/        
-    #ifdef STEPPER_SUPPORT
-      case 0x30:  // Configure Stepper
-        if (command[2] == 5){    // Support AFMotor Shield
-          switch (command[3]){
-          case 0:
-            steppers[command[3]] = AccelStepper(forwardstep1, backwardstep1);
-            break;
-          case 1:
-            steppers[command[3]] = AccelStepper(forwardstep2, backwardstep2);
-            break;
-          default:
-            break;
-          }
-        }
-        else if(command[2]==6) {                   // All other stepper configurations
-          steppers[command[3]] = AccelStepper(1, command[4],command[5],command[6],command[7]);       
-        }   
-        else{
-          steppers[command[3]] = AccelStepper(command[2], command[4],command[5],command[6],command[7]);
-        }  
-         Serial.write('0');
-        break; 
-      case 0x31:  // Stepper Write
-        AccelStepper_Write(command);
-         Serial.write('0');
-        break;
-      case 0x32:  // Stepper Detach
-        steppers[command[2]].disableOutputs();
-         Serial.write('0');
-        break; 
-      case 0x33:  // Stepper steps to go
-        retVal = 0;
-        for(int i=0; i<8; i++){
-          retVal += steppers[i].distanceToGo();
-        }
-        Serial.write( (retVal & 0xFF) );
-        Serial.write( (retVal >> 8) );
+    // /*********************************************************************************
+    // ** Continuous Aquisition
+    // *********************************************************************************/        
+    //   case 0x2A:  // Continuous Aquisition Mode On
+    //     acqMode=1;
+    //     contAcqPin=command[2];
+    //     contAcqSpeed=(command[3])+(command[4]<<8);  
+    //     acquisitionPeriod=1/contAcqSpeed;
+    //     iterationsFlt =.08/acquisitionPeriod;
+    //     iterations=(int)iterationsFlt;
+    //     if(iterations<1)
+    //     {
+    //       iterations=1;
+    //     }
+    //     delayTime= acquisitionPeriod; 
+    //    if(delayTime<0)
+    //    {
+    //      delayTime=0;
+    //    }   
+    //     break;   
+    //   case 0x2B:  // Continuous Aquisition Mode Off
+    //     acqMode=0;      
+    //     break;  
+    //  case 0x2C:  // Return Firmware Revision
+    //      Serial.write(byte(FIRMWARE_MAJOR));  
+    //      Serial.write(byte(FIRMWARE_MINOR));   
+    //     break;  
+    //  case 0x2D:  // Perform Finite Aquisition
+    //      Serial.write('0');
+    //      finiteAcquisition(command[2],(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
+    //     break;   
+    // /*********************************************************************************
+    // ** Stepper
+    // *********************************************************************************/        
+    // #ifdef STEPPER_SUPPORT
+    //   case 0x30:  // Configure Stepper
+    //     if (command[2] == 5){    // Support AFMotor Shield
+    //       switch (command[3]){
+    //       case 0:
+    //         steppers[command[3]] = AccelStepper(forwardstep1, backwardstep1);
+    //         break;
+    //       case 1:
+    //         steppers[command[3]] = AccelStepper(forwardstep2, backwardstep2);
+    //         break;
+    //       default:
+    //         break;
+    //       }
+    //     }
+    //     else if(command[2]==6) {                   // All other stepper configurations
+    //       steppers[command[3]] = AccelStepper(1, command[4],command[5],command[6],command[7]);       
+    //     }   
+    //     else{
+    //       steppers[command[3]] = AccelStepper(command[2], command[4],command[5],command[6],command[7]);
+    //     }  
+    //      Serial.write('0');
+    //     break; 
+    //   case 0x31:  // Stepper Write
+    //     AccelStepper_Write(command);
+    //      Serial.write('0');
+    //     break;
+    //   case 0x32:  // Stepper Detach
+    //     steppers[command[2]].disableOutputs();
+    //      Serial.write('0');
+    //     break; 
+    //   case 0x33:  // Stepper steps to go
+    //     retVal = 0;
+    //     for(int i=0; i<8; i++){
+    //       retVal += steppers[i].distanceToGo();
+    //     }
+    //     Serial.write( (retVal & 0xFF) );
+    //     Serial.write( (retVal >> 8) );
   
-        break; 
-    #endif
+    //     break; 
+    // #endif
     
-    /*********************************************************************************
-    ** IR Transmit
-    *********************************************************************************/
-    case 0x34:  // IR Transmit  
-      IRdata = ((unsigned long)command [4] << 24) | ((unsigned long)command [5] << 16) | ((unsigned long)command [6] << 8) | ((unsigned long)command [7]);    
-      switch(command[2])
-      {
-        case 0x00:  // NEC
-          irsend.sendNEC(IRdata, command[3]);
-          break;
-        case 0x01:  //Sony
-          irsend.sendSony(IRdata, command[3]);
-          break;
-        case 0x02:  //RC5
-          irsend.sendRC5(IRdata, command[3]);
-          break;
-        case 0x03:  //RC6
-          irsend.sendRC6(IRdata, command[3]);
-          break;
-      }
-      Serial.write((IRdata>>16) & 0xFF);
-      break;
+    // /*********************************************************************************
+    // ** IR Transmit
+    // *********************************************************************************/
+    // case 0x34:  // IR Transmit  
+    //   IRdata = ((unsigned long)command [4] << 24) | ((unsigned long)command [5] << 16) | ((unsigned long)command [6] << 8) | ((unsigned long)command [7]);    
+    //   switch(command[2])
+    //   {
+    //     case 0x00:  // NEC
+    //       irsend.sendNEC(IRdata, command[3]);
+    //       break;
+    //     case 0x01:  //Sony
+    //       irsend.sendSony(IRdata, command[3]);
+    //       break;
+    //     case 0x02:  //RC5
+    //       irsend.sendRC5(IRdata, command[3]);
+    //       break;
+    //     case 0x03:  //RC6
+    //       irsend.sendRC6(IRdata, command[3]);
+    //       break;
+    //   }
+    //   Serial.write((IRdata>>16) & 0xFF);
+    //   break;
     /*********************************************************************************
     ** Unknown Packet
     *********************************************************************************/
@@ -622,109 +622,109 @@ void analogReadPort()
   Serial.print(output7);
 }
 
-// Configure digital I/O pins to use for seven segment display
-void sevenSegment_Config(unsigned char command[])
-{
-  // Configure pins as outputs and store in sevenSegmentPins array for use in sevenSegment_Write
-  for(int i=2; i<10; i++)
-  {
-    pinMode(command[i], OUTPUT); 
-    sevenSegmentPins[(i-1)] = command[i];
-  }  
-}
+// // Configure digital I/O pins to use for seven segment display
+// void sevenSegment_Config(unsigned char command[])
+// {
+//   // Configure pins as outputs and store in sevenSegmentPins array for use in sevenSegment_Write
+//   for(int i=2; i<10; i++)
+//   {
+//     pinMode(command[i], OUTPUT); 
+//     sevenSegmentPins[(i-1)] = command[i];
+//   }  
+// }
 
-//  Write values to sevenSegment display.  Must first use sevenSegment_Configure
-void sevenSegment_Write(unsigned char command[])
-{
-  for(int i=1; i<9; i++)
-  {
-    digitalWrite(sevenSegmentPins[(i-1)], command[i]);
-  }
-}
+// //  Write values to sevenSegment display.  Must first use sevenSegment_Configure
+// void sevenSegment_Write(unsigned char command[])
+// {
+//   for(int i=1; i<9; i++)
+//   {
+//     digitalWrite(sevenSegmentPins[(i-1)], command[i]);
+//   }
+// }
 
-// Set the SPI Clock Divisor
-void spi_setClockDivider(unsigned char divider)
-{
-  switch(divider)
-  {
-  case 0:
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
-    break;
-  case 1:
-    SPI.setClockDivider(SPI_CLOCK_DIV4);
-    break;
-  case 2:
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
-    break;
-  case 3:
-    SPI.setClockDivider(SPI_CLOCK_DIV16);
-    break;
-  case 4:
-    SPI.setClockDivider(SPI_CLOCK_DIV32);
-    break;
-  case 5:
-    SPI.setClockDivider(SPI_CLOCK_DIV64);
-    break;
-  case 6:
-    SPI.setClockDivider(SPI_CLOCK_DIV128);
-    break;
-  default:
-    SPI.setClockDivider(SPI_CLOCK_DIV4);
-    break;
-  }  
-}
+// // Set the SPI Clock Divisor
+// void spi_setClockDivider(unsigned char divider)
+// {
+//   switch(divider)
+//   {
+//   case 0:
+//     SPI.setClockDivider(SPI_CLOCK_DIV2);
+//     break;
+//   case 1:
+//     SPI.setClockDivider(SPI_CLOCK_DIV4);
+//     break;
+//   case 2:
+//     SPI.setClockDivider(SPI_CLOCK_DIV8);
+//     break;
+//   case 3:
+//     SPI.setClockDivider(SPI_CLOCK_DIV16);
+//     break;
+//   case 4:
+//     SPI.setClockDivider(SPI_CLOCK_DIV32);
+//     break;
+//   case 5:
+//     SPI.setClockDivider(SPI_CLOCK_DIV64);
+//     break;
+//   case 6:
+//     SPI.setClockDivider(SPI_CLOCK_DIV128);
+//     break;
+//   default:
+//     SPI.setClockDivider(SPI_CLOCK_DIV4);
+//     break;
+//   }  
+// }
 
-void spi_sendReceive(unsigned char command[])
-{
-  if(command[2] == 1)        //Check to see if this is the first of a series of SPI packets
-  {
-    spiBytesSent = 0;
-    spiCSPin = command[3];    
-    spiWordSize = command[4];                    
+// void spi_sendReceive(unsigned char command[])
+// {
+//   if(command[2] == 1)        //Check to see if this is the first of a series of SPI packets
+//   {
+//     spiBytesSent = 0;
+//     spiCSPin = command[3];    
+//     spiWordSize = command[4];                    
 
-    // Send First Packet's 8 Data Bytes
-    for(int i=0; i<command[5]; i++)
-    {
-      // If this is the start of a new word toggle CS LOW
-      if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
-      {              
-        digitalWrite(spiCSPin, LOW);                
-      }
-      // Send SPI Byte
-      Serial.print(SPI.transfer(command[i+6]));     
-      spiBytesSent++;  
+//     // Send First Packet's 8 Data Bytes
+//     for(int i=0; i<command[5]; i++)
+//     {
+//       // If this is the start of a new word toggle CS LOW
+//       if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
+//       {              
+//         digitalWrite(spiCSPin, LOW);                
+//       }
+//       // Send SPI Byte
+//       Serial.print(SPI.transfer(command[i+6]));     
+//       spiBytesSent++;  
 
-      // If word is complete set CS High
-      if(spiBytesSent % spiWordSize == 0)
-      {
-        digitalWrite(spiCSPin, HIGH);                  
-      }
-    }
-  }
-  else
-  {
-    // SPI Data Packet - Send SPI Bytes
-    for(int i=0; i<command[3]; i++)
-    {
-      // If this is the start of a new word toggle CS LOW
-      if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
-      {              
-        digitalWrite(spiCSPin, LOW);                
-      }
-      // Send SPI Byte
-      Serial.write(SPI.transfer(command[i+4]));     
-      spiBytesSent++;  
+//       // If word is complete set CS High
+//       if(spiBytesSent % spiWordSize == 0)
+//       {
+//         digitalWrite(spiCSPin, HIGH);                  
+//       }
+//     }
+//   }
+//   else
+//   {
+//     // SPI Data Packet - Send SPI Bytes
+//     for(int i=0; i<command[3]; i++)
+//     {
+//       // If this is the start of a new word toggle CS LOW
+//       if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
+//       {              
+//         digitalWrite(spiCSPin, LOW);                
+//       }
+//       // Send SPI Byte
+//       Serial.write(SPI.transfer(command[i+4]));     
+//       spiBytesSent++;  
 
-      // If word is complete set CS High
-      if(spiBytesSent % spiWordSize == 0)
-      {
-        digitalWrite(spiCSPin, HIGH);                  
-      }
-    }
-  } 
-}
+//       // If word is complete set CS High
+//       if(spiBytesSent % spiWordSize == 0)
+//       {
+//         digitalWrite(spiCSPin, HIGH);                  
+//       }
+//     }
+//   } 
+// }
 
-// Synchronizes with LabVIEW and sends info about the board and firmware (Unimplemented)
+// // Synchronizes with LabVIEW and sends info about the board and firmware (Unimplemented)
 void syncLV()
 {
   Serial.begin(DEFAULTBAUDRATE); 
@@ -759,32 +759,32 @@ int checksum_Test(unsigned char command[])
   }
 }
 
-// Stepper Functions
-#ifdef STEPPER_SUPPORT
-  void AccelStepper_Write(unsigned char command[]){
-    int steps = 0;
-    int step_speed = 0;
-    int acceleration = 0;
+// // Stepper Functions
+// #ifdef STEPPER_SUPPORT
+//   void AccelStepper_Write(unsigned char command[]){
+//     int steps = 0;
+//     int step_speed = 0;
+//     int acceleration = 0;
   
-    //Number of steps & speed are a 16 bit values, split for data transfer. Reassemble 2 bytes to an int 16
-    steps = (int)(command[5] << 8) + command[6]; 
-    step_speed = (int)(command[2] << 8) + command[3];
-    acceleration = (int)(command[7] << 8) + command[8];
+//     //Number of steps & speed are a 16 bit values, split for data transfer. Reassemble 2 bytes to an int 16
+//     steps = (int)(command[5] << 8) + command[6]; 
+//     step_speed = (int)(command[2] << 8) + command[3];
+//     acceleration = (int)(command[7] << 8) + command[8];
   
-    steppers[command[4]].setMaxSpeed(step_speed);
+//     steppers[command[4]].setMaxSpeed(step_speed);
   
-    if (acceleration == 0){
-      //Workaround AccelStepper bug that requires negative speed for negative step direction
-      if (steps < 0) step_speed = -step_speed;
-      steppers[command[4]].setSpeed(step_speed);
-      steppers[command[4]].move(steps);
-    }
-    else {
-      steppers[command[4]].setAcceleration(acceleration);
-      steppers[command[4]].move(steps);
-    }
-  }
-#endif
+//     if (acceleration == 0){
+//       //Workaround AccelStepper bug that requires negative speed for negative step direction
+//       if (steps < 0) step_speed = -step_speed;
+//       steppers[command[4]].setSpeed(step_speed);
+//       steppers[command[4]].move(steps);
+//     }
+//     else {
+//       steppers[command[4]].setAcceleration(acceleration);
+//       steppers[command[4]].move(steps);
+//     }
+//   }
+// #endif
 
 
 void sampleContinously()
@@ -806,68 +806,68 @@ void sampleContinously()
      }
   }
 }
-void finiteAcquisition(int analogPin, float acquisitionSpeed, int numberOfSamples)
-{
-  //want to exit this loop every 8ms
-   acquisitionPeriod=1/acquisitionSpeed;
+// void finiteAcquisition(int analogPin, float acquisitionSpeed, int numberOfSamples)
+// {
+//   //want to exit this loop every 8ms
+//    acquisitionPeriod=1/acquisitionSpeed;
    
-  for(int i=0; i<numberOfSamples; i++)
-  {
-     retVal = analogRead(analogPin);
+//   for(int i=0; i<numberOfSamples; i++)
+//   {
+//      retVal = analogRead(analogPin);
     
-     if(acquisitionSpeed>1000)
-     {
-       Serial.write( (retVal >> 2));
-       delayMicroseconds(acquisitionPeriod*1000000);
-     }
-     else
-     {
-       Serial.write( (retVal & 0xFF) );
-       Serial.write( (retVal >> 8));
-       delay(acquisitionPeriod*1000);
-     }
-  }
-}
+//      if(acquisitionSpeed>1000)
+//      {
+//        Serial.write( (retVal >> 2));
+//        delayMicroseconds(acquisitionPeriod*1000000);
+//      }
+//      else
+//      {
+//        Serial.write( (retVal & 0xFF) );
+//        Serial.write( (retVal >> 8));
+//        delay(acquisitionPeriod*1000);
+//      }
+//   }
+// }
 
-void lcd_print(unsigned char command[])
-{
-  if(command[2] != 0)
-  {          
-    // Base Specified By User
-    int base = 0;
-    switch(command[2])
-    {
-      case 0x01:  // BIN
-        base = BIN;
-        break;
-      case 0x02:  // DEC
-        base = DEC;
-        break;
-      case 0x03:  // OCT
-        base = OCT;
-        break;
-      case 0x04:  // HEX
-        base = HEX;
-        break;
-      default:
-        break;
-    }
-    for(int i=0; i<command[3]; i++)
-    {
-      lcd.print(command[i+4], base);
-    } 
-  }
-  else
-  {
+// void lcd_print(unsigned char command[])
+// {
+//   if(command[2] != 0)
+//   {          
+//     // Base Specified By User
+//     int base = 0;
+//     switch(command[2])
+//     {
+//       case 0x01:  // BIN
+//         base = BIN;
+//         break;
+//       case 0x02:  // DEC
+//         base = DEC;
+//         break;
+//       case 0x03:  // OCT
+//         base = OCT;
+//         break;
+//       case 0x04:  // HEX
+//         base = HEX;
+//         break;
+//       default:
+//         break;
+//     }
+//     for(int i=0; i<command[3]; i++)
+//     {
+//       lcd.print(command[i+4], base);
+//     } 
+//   }
+//   else
+//   {
     
-    for(int i=0; i<command[3]; i++)
-    {
-      lcd.print((char)command[i+4]);
+//     for(int i=0; i<command[3]; i++)
+//     {
+//       lcd.print((char)command[i+4]);
     
-    } 
-  }
-  Serial.write('0');
-}
+//     } 
+//   }
+//   Serial.write('0');
+// }
 
 
 
