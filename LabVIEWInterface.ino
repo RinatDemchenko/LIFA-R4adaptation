@@ -16,7 +16,7 @@
 #include <LiquidCrystal.h>
 
 //Includes for IR Remote
-// #ifndef IRremoteInt_h
+// #ifndef IRremot// #ifndef IRremot// #ifndef IRremot// #ifndef IRremoteInt_h
 // #include "IRremoteInt.h"
 // #endif
 // #ifndef IRremote_h
@@ -191,16 +191,16 @@ void processCommand(unsigned char command[])
     // /*********************************************************************************
     // ** Low Level - PWM Commands
     // *********************************************************************************/      
-    // case 0x0A:    // PWM Write Pin
-    //   analogWrite(command[2], command[3]);
-    //    Serial.write('0');
-    //   break;
-    // case 0x0B:    // PWM Write 3 Pins
-    //   analogWrite(command[2], command[5]);
-    //   analogWrite(command[3], command[6]);
-    //   analogWrite(command[4], command[7]);
-    //    Serial.write('0');
-    //   break;
+    case 0x0A:    // PWM Write Pin
+      analogWrite(command[2], command[3]);
+       Serial.write('0');
+      break;
+    case 0x0B:    // PWM Write 3 Pins
+      analogWrite(command[2], command[5]);
+      analogWrite(command[3], command[6]);
+      analogWrite(command[4], command[7]);
+       Serial.write('0');
+      break;
       
     // /*********************************************************************************
     // ** Sensor Specific Commands
@@ -868,10 +868,3 @@ void sampleContinously()
 //   }
 //   Serial.write('0');
 // }
-
-
-
-
-
-
-
