@@ -214,53 +214,53 @@ void processCommand(unsigned char command[])
     //    Serial.write('0');
     //   break;
       
-    // /*********************************************************************************
-    // **  I2C
-    // *********************************************************************************/
-    // case 0x0E:    // Initialize I2C
-    //   Wire.begin();
-    //    Serial.write('0');
-    //   break;
-    // case 0x0F:    // Send I2C Data
-    //   Wire.beginTransmission(command[3]);
-    //   for(int i=0; i<command[2]; i++)
-    //   {
-    //     #if defined(ARDUINO) && ARDUINO >= 100
-    //       Wire.write(command[i+4]);
-    //     #else
-    //       Wire.send(command[i+4]);
-    //     #endif
+    /*********************************************************************************
+    **  I2C
+    *********************************************************************************/
+    case 0x0E:    // Initialize I2C
+      Wire.begin();
+       Serial.write('0');
+      break;
+    case 0x0F:    // Send I2C Data
+      Wire.beginTransmission(command[3]);
+      for(int i=0; i<command[2]; i++)
+      {
+        #if defined(ARDUINO) && ARDUINO >= 100
+          Wire.write(command[i+4]);
+        #else
+          Wire.send(command[i+4]);
+        #endif
         
-    //   }
-    //   Wire.endTransmission(); 
-    //    Serial.write('0');   
-    //   break;
-    // case 0x10:    // I2C Read  
-    //   i2cReadTimeouts = 0;
-    //   Wire.requestFrom(command[3], command[2]);
-    //   while(Wire.available() < command[2])
-    //   {
-    //     i2cReadTimeouts++;
-    //     if(i2cReadTimeouts > 100)
-    //     {
-    //       return;
-    //     }
-    //     else
-    //     {
-    //       delay(1); 
-    //     }
-    //   }
+      }
+      Wire.endTransmission(); 
+       Serial.write('0');   
+      break;
+    case 0x10:    // I2C Read  
+      i2cReadTimeouts = 0;
+      Wire.requestFrom(command[3], command[2]);
+      while(Wire.available() < command[2])
+      {
+        i2cReadTimeouts++;
+        if(i2cReadTimeouts > 100)
+        {
+          return;
+        }
+        else
+        {
+          delay(1); 
+        }
+      }
 
-    //   for(int i=0; i<command[2]; i++)
-    //   {
-    //     #if defined(ARDUINO) && ARDUINO >= 100
-    //       Serial.write(Wire.read());
-    //     #else
-    //       Serial.write(Wire.receive());
-    //     #endif
+      for(int i=0; i<command[2]; i++)
+      {
+        #if defined(ARDUINO) && ARDUINO >= 100
+          Serial.write(Wire.read());
+        #else
+          Serial.write(Wire.receive());
+        #endif
         
-    //   }
-    //   break;
+      }
+      break;
       
     // /*********************************************************************************
     // ** SPI
@@ -456,37 +456,37 @@ void processCommand(unsigned char command[])
     //     break;
             
         
-    // /*********************************************************************************
-    // ** Continuous Aquisition
-    // *********************************************************************************/        
-    //   case 0x2A:  // Continuous Aquisition Mode On
-    //     acqMode=1;
-    //     contAcqPin=command[2];
-    //     contAcqSpeed=(command[3])+(command[4]<<8);  
-    //     acquisitionPeriod=1/contAcqSpeed;
-    //     iterationsFlt =.08/acquisitionPeriod;
-    //     iterations=(int)iterationsFlt;
-    //     if(iterations<1)
-    //     {
-    //       iterations=1;
-    //     }
-    //     delayTime= acquisitionPeriod; 
-    //    if(delayTime<0)
-    //    {
-    //      delayTime=0;
-    //    }   
-    //     break;   
-    //   case 0x2B:  // Continuous Aquisition Mode Off
-    //     acqMode=0;      
-    //     break;  
-    //  case 0x2C:  // Return Firmware Revision
-    //      Serial.write(byte(FIRMWARE_MAJOR));  
-    //      Serial.write(byte(FIRMWARE_MINOR));   
-    //     break;  
-    //  case 0x2D:  // Perform Finite Aquisition
-    //      Serial.write('0');
-    //      finiteAcquisition(command[2],(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
-    //     break;   
+    /*********************************************************************************
+    ** Continuous Aquisition
+    *********************************************************************************/        
+      case 0x2A:  // Continuous Aquisition Mode On
+        acqMode=1;
+        contAcqPin=command[2];
+        contAcqSpeed=(command[3])+(command[4]<<8);  
+        acquisitionPeriod=1/contAcqSpeed;
+        iterationsFlt =.08/acquisitionPeriod;
+        iterations=(int)iterationsFlt;
+        if(iterations<1)
+        {
+          iterations=1;
+        }
+        delayTime= acquisitionPeriod; 
+       if(delayTime<0)
+       {
+         delayTime=0;
+       }   
+        break;   
+      case 0x2B:  // Continuous Aquisition Mode Off
+        acqMode=0;      
+        break;  
+     case 0x2C:  // Return Firmware Revision
+         Serial.write(byte(FIRMWARE_MAJOR));  
+         Serial.write(byte(FIRMWARE_MINOR));   
+        break;  
+     case 0x2D:  // Perform Finite Aquisition
+         Serial.write('0');
+         finiteAcquisition(command[2],(command[3])+(command[4]<<8),command[5]+(command[6]<<8));
+        break;   
     // /*********************************************************************************
     // ** Stepper
     // *********************************************************************************/        
@@ -806,28 +806,28 @@ void sampleContinously()
      }
   }
 }
-// void finiteAcquisition(int analogPin, float acquisitionSpeed, int numberOfSamples)
-// {
-//   //want to exit this loop every 8ms
-//    acquisitionPeriod=1/acquisitionSpeed;
+void finiteAcquisition(int analogPin, float acquisitionSpeed, int numberOfSamples)
+{
+  //want to exit this loop every 8ms
+   acquisitionPeriod=1/acquisitionSpeed;
    
-//   for(int i=0; i<numberOfSamples; i++)
-//   {
-//      retVal = analogRead(analogPin);
+  for(int i=0; i<numberOfSamples; i++)
+  {
+     retVal = analogRead(analogPin);
     
-//      if(acquisitionSpeed>1000)
-//      {
-//        Serial.write( (retVal >> 2));
-//        delayMicroseconds(acquisitionPeriod*1000000);
-//      }
-//      else
-//      {
-//        Serial.write( (retVal & 0xFF) );
-//        Serial.write( (retVal >> 8));
-//        delay(acquisitionPeriod*1000);
-//      }
-//   }
-// }
+     if(acquisitionSpeed>1000)
+     {
+       Serial.write( (retVal >> 2));
+       delayMicroseconds(acquisitionPeriod*1000000);
+     }
+     else
+     {
+       Serial.write( (retVal & 0xFF) );
+       Serial.write( (retVal >> 8));
+       delay(acquisitionPeriod*1000);
+     }
+  }
+}
 
 // void lcd_print(unsigned char command[])
 // {
