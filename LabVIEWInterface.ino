@@ -76,6 +76,10 @@ LiquidCrystal lcd(0,0,0,0,0,0,0);
 unsigned long IRdata;
 // IRsend irsend;
 
+uint32_t spiSpeed = 4000000;      
+BitOrder spiBitOrder = MSBFIRST;  
+int spiDataMode = SPI_MODE0; 
+
 // Sets the mode of the Arduino (Reserved For Future Use)
 void setMode(int mode)
 {
@@ -262,55 +266,55 @@ void processCommand(unsigned char command[])
       }
       break;
       
-    // /*********************************************************************************
-    // ** SPI
-    // *********************************************************************************/      
-    // case 0x11:    // SPI Init
-    //   SPI.begin();
-    //    Serial.write('0');
-    //   break;
-    // case 0x12:    // SPI Set Bit Order (MSB LSB)
-    //   if(command[2] == 0)
-    //   {
-    //     SPI.setBitOrder(LSBFIRST);
-    //   }
-    //   else
-    //   {
-    //     SPI.setBitOrder(MSBFIRST); 
-    //   }  
-    //    Serial.write('0');  
-    //   break;
-    // case 0x13:    // SPI Set Clock Divider
-    //   spi_setClockDivider(command[2]);
-    //    Serial.write('0');
-    //   break;
-    // case 0x14:    // SPI Set Data Mode
-    //   switch(command[2])
-    //   {
-    //   case 0:
-    //     SPI.setDataMode(SPI_MODE0);
-    //     break;  
-    //   case 1:
-    //     SPI.setDataMode(SPI_MODE1);
-    //     break; 
-    //   case 2:
-    //     SPI.setDataMode(SPI_MODE2);
-    //     break; 
-    //   case 3:
-    //     SPI.setDataMode(SPI_MODE3);
-    //     break; 
-    //   default:        
-    //     break;
-    //   }    
-    //    Serial.write('0');
-    //   break;
-    // case 0x15:  // SPI Send / Receive 
-    //   spi_sendReceive(command);
-    //   break;
-    // case 0x16:  // SPI Close
-    //   SPI.end();
-    //    Serial.write('0');  
-    //   break; 
+    /*********************************************************************************
+    ** SPI
+    *********************************************************************************/      
+    case 0x11:    // SPI Init
+      SPI.begin();
+       Serial.write('0');
+      break;
+    case 0x12:    // SPI Set Bit Order (MSB LSB)
+      if(command[2] == 0)
+      {
+        spiBitOrder = LSBFIRST;
+      }
+      else
+      {
+        spiBitOrder = MSBFIRST; 
+      }  
+       Serial.write('0');  
+      break;
+    case 0x13:    // SPI Set Clock Divider
+      spi_setClockDivider(command[2]);
+       Serial.write('0');
+      break;
+    case 0x14:    // SPI Set Data Mode
+      switch(command[2])
+      {
+      case 0:
+        spiDataMode = SPI_MODE0;
+        break;  
+      case 1:
+        spiDataMode = SPI_MODE1;
+        break; 
+      case 2:
+        spiDataMode = SPI_MODE2;
+        break; 
+      case 3:
+        spiDataMode = SPI_MODE3;
+        break; 
+      default:        
+        break;
+      }    
+       Serial.write('0');
+      break;
+    case 0x15:  // SPI Send / Receive 
+      spi_sendReceive(command);
+      break;
+    case 0x16:  // SPI Close
+      SPI.end();
+       Serial.write('0');  
+      break; 
       
     // /*********************************************************************************
     // ** Servos
@@ -642,89 +646,97 @@ void analogReadPort()
 //   }
 // }
 
-// // Set the SPI Clock Divisor
-// void spi_setClockDivider(unsigned char divider)
-// {
-//   switch(divider)
-//   {
-//   case 0:
-//     SPI.setClockDivider(SPI_CLOCK_DIV2);
-//     break;
-//   case 1:
-//     SPI.setClockDivider(SPI_CLOCK_DIV4);
-//     break;
-//   case 2:
-//     SPI.setClockDivider(SPI_CLOCK_DIV8);
-//     break;
-//   case 3:
-//     SPI.setClockDivider(SPI_CLOCK_DIV16);
-//     break;
-//   case 4:
-//     SPI.setClockDivider(SPI_CLOCK_DIV32);
-//     break;
-//   case 5:
-//     SPI.setClockDivider(SPI_CLOCK_DIV64);
-//     break;
-//   case 6:
-//     SPI.setClockDivider(SPI_CLOCK_DIV128);
-//     break;
-//   default:
-//     SPI.setClockDivider(SPI_CLOCK_DIV4);
-//     break;
-//   }  
-// }
+// Set the SPI Clock Divisor - converts divider to frequency and stores in spiSpeed
+void spi_setClockDivider(unsigned char divider)
+{
+  // Convert clock divider to frequency (assuming 16 MHz Arduino)
+  switch(divider)
+  {
+  case 0:
+    spiSpeed = F_CPU/2;  // DIV2
+    break;
+  case 1:
+    spiSpeed = F_CPU/4;  // DIV4
+    break;
+  case 2:
+    spiSpeed = F_CPU/8;  // DIV8
+    break;
+  case 3:
+    spiSpeed = F_CPU/16;  // DIV16
+    break;
+  case 4:
+    spiSpeed = F_CPU/32;   // DIV32
+    break;
+  case 5:
+    spiSpeed = F_CPU/64;   // DIV64
+    break;
+  case 6:
+    spiSpeed = F_CPU/128;   // DIV128
+    break;
+  default:
+    spiSpeed = F_CPU/4;  // DIV4 (default)
+    break;
+  }  
+}
 
-// void spi_sendReceive(unsigned char command[])
-// {
-//   if(command[2] == 1)        //Check to see if this is the first of a series of SPI packets
-//   {
-//     spiBytesSent = 0;
-//     spiCSPin = command[3];    
-//     spiWordSize = command[4];                    
+void spi_sendReceive(unsigned char command[])
+{
+  // Create SPISettings with current parameters
+  SPISettings settings(spiSpeed, spiBitOrder, spiDataMode);
+  
+  if(command[2] == 1)        //Check to see if this is the first of a series of SPI packets
+  {
+    spiBytesSent = 0;
+    spiCSPin = command[3];    
+    spiWordSize = command[4];                    
 
-//     // Send First Packet's 8 Data Bytes
-//     for(int i=0; i<command[5]; i++)
-//     {
-//       // If this is the start of a new word toggle CS LOW
-//       if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
-//       {              
-//         digitalWrite(spiCSPin, LOW);                
-//       }
-//       // Send SPI Byte
-//       Serial.print(SPI.transfer(command[i+6]));     
-//       spiBytesSent++;  
+    // Send First Packet's 8 Data Bytes
+    for(int i=0; i<command[5]; i++)
+    {
+      // If this is the start of a new word toggle CS LOW
+      if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
+      {              
+        SPI.beginTransaction(settings);
+        digitalWrite(spiCSPin, LOW);                
+      }
+      // Send SPI Byte
+      Serial.print(SPI.transfer(command[i+6]));     
+      spiBytesSent++;  
 
-//       // If word is complete set CS High
-//       if(spiBytesSent % spiWordSize == 0)
-//       {
-//         digitalWrite(spiCSPin, HIGH);                  
-//       }
-//     }
-//   }
-//   else
-//   {
-//     // SPI Data Packet - Send SPI Bytes
-//     for(int i=0; i<command[3]; i++)
-//     {
-//       // If this is the start of a new word toggle CS LOW
-//       if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
-//       {              
-//         digitalWrite(spiCSPin, LOW);                
-//       }
-//       // Send SPI Byte
-//       Serial.write(SPI.transfer(command[i+4]));     
-//       spiBytesSent++;  
+      // If word is complete set CS High
+      if(spiBytesSent % spiWordSize == 0)
+      {
+        digitalWrite(spiCSPin, HIGH);
+        SPI.endTransaction();                  
+      }
+    }
+  }
+  else
+  {
+    // SPI Data Packet - Send SPI Bytes
+    for(int i=0; i<command[3]; i++)
+    {
+      // If this is the start of a new word toggle CS LOW
+      if( (spiBytesSent == 0) || (spiBytesSent % spiWordSize == 0) )
+      {              
+        SPI.beginTransaction(settings);
+        digitalWrite(spiCSPin, LOW);                
+      }
+      // Send SPI Byte
+      Serial.write(SPI.transfer(command[i+4]));     
+      spiBytesSent++;  
 
-//       // If word is complete set CS High
-//       if(spiBytesSent % spiWordSize == 0)
-//       {
-//         digitalWrite(spiCSPin, HIGH);                  
-//       }
-//     }
-//   } 
-// }
+      // If word is complete set CS High
+      if(spiBytesSent % spiWordSize == 0)
+      {
+        digitalWrite(spiCSPin, HIGH);
+        SPI.endTransaction();                  
+      }
+    }
+  } 
+}
 
-// // Synchronizes with LabVIEW and sends info about the board and firmware (Unimplemented)
+// Synchronizes with LabVIEW and sends info about the board and firmware (Unimplemented)
 void syncLV()
 {
   Serial.begin(DEFAULTBAUDRATE); 
