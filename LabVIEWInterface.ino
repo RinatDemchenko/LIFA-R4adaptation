@@ -15,6 +15,7 @@
 #include <SPI.h>
 #include <LiquidCrystal.h>
 
+
 //Includes for IR Remote
 // #ifndef IRremot// #ifndef IRremot// #ifndef IRremot// #ifndef IRremoteInt_h
 // #include "IRremoteInt.h"
@@ -58,6 +59,7 @@
 
 // #endif
 
+
 // Variables
 
 unsigned int retVal;
@@ -77,8 +79,12 @@ unsigned long IRdata;
 // IRsend irsend;
 
 uint32_t spiSpeed = 4000000;      
-BitOrder spiBitOrder = MSBFIRST;  
-int spiDataMode = SPI_MODE0; 
+#if defined(ARDUINO_API_VERSION)
+BitOrder spiBitOrder = MSBFIRST;  // Arduino R4
+#else
+uint8_t spiBitOrder = MSBFIRST;   // Old Arduino boards
+#endif
+int spiDataMode = SPI_MODE0;
 
 // Sets the mode of the Arduino (Reserved For Future Use)
 void setMode(int mode)
@@ -480,9 +486,11 @@ void processCommand(unsigned char command[])
          delayTime=0;
        }   
         break;   
+
       case 0x2B:  // Continuous Aquisition Mode Off
-        acqMode=0;      
-        break;  
+        acqMode=0;   
+        break;
+  
      case 0x2C:  // Return Firmware Revision
          Serial.write(byte(FIRMWARE_MAJOR));  
          Serial.write(byte(FIRMWARE_MINOR));   
@@ -616,7 +624,8 @@ void analogReadPort()
   char output7 = ( (pin5 >> 6) & 0x0F );
 
   // Write Bytes To Serial Port
-  Serial.print(output0);
+  Serial.print(output0);+
+  
   Serial.print(output1);
   Serial.print(output2);
   Serial.print(output3);
@@ -804,7 +813,7 @@ void sampleContinously()
    
   for(int i=0; i<iterations; i++)
   {
-     retVal = analogRead(contAcqPin);
+    retVal = analogRead(contAcqPin);
      if(contAcqSpeed>1000) //delay Microseconds is only accurate for values less that 16383
      {
        Serial.write( (retVal >> 2));
@@ -825,6 +834,9 @@ void finiteAcquisition(int analogPin, float acquisitionSpeed, int numberOfSample
    
   for(int i=0; i<numberOfSamples; i++)
   {
+    while(!Serial.availableForWrite()){
+      delay(1);
+    }
      retVal = analogRead(analogPin);
     
      if(acquisitionSpeed>1000)
