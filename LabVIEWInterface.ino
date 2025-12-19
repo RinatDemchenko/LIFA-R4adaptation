@@ -277,6 +277,7 @@ void processCommand(unsigned char command[])
     *********************************************************************************/      
     case 0x11:    // SPI Init
       SPI.begin();
+      pinMode(10, OUTPUT);
        Serial.write('0');
       break;
     case 0x12:    // SPI Set Bit Order (MSB LSB)
